@@ -16,6 +16,44 @@ prompt library built from your own questions.
 
 ### 1.
 
+Was something mentioned that nobody else called out?
+
 ### 2.
 
+is there anything in the interviews that point to previous issue with the software?
+
 ### 3.
+
+Based on the interviews, what is the trouble with 4.2
+
+### 4.
+
+summarize the issue with 4.2
+
+### 5.
+
+please anlze the tickets
+
+### 6.
+
+re run the ping count
+
+### 7.
+
+You've now read both folders. Where do they disagree? What's loud in the interviews but rare in the tickets, and what's all over the tickets that nobody brought up in the interviews?
+
+### 8.
+
+is there a reason why Linda Pruitt, Desmond Okafor, Simone Fischer and Yusuf Demir were not interviewed
+
+### 9.
+
+can you find something in the wiki about the console being changed?
+
+### 10.
+
+Can you check more on the filter issue
+
+### 11.
+
+What would i have missed if i only read the interviews
