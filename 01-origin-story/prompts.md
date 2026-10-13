@@ -24,6 +24,12 @@ prompt library built from your own questions.
 
 ### 1.
 
+What's contradictory or missing across the wiki pages, the handover note, and the rest of this folder?
+
 ### 2.
 
+Please query the rook database to answer the seasonal question
+
 ### 3.
+
+please draft the messages for me
