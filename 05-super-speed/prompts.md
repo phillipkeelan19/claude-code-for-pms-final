@@ -16,6 +16,39 @@ prompt library built from your own questions.
 
 ### 1.
 
+Please write a product brief of the rook issuse adressing 
+1.who the solution is for
+2.what changes once it ships
+3what it does not do
+
 ### 2.
 
+Please write a product brief about the quiet responders for Helen outlining the changes that came with 4.2
+
 ### 3.
+
+please shorten it to a one pager with a summary upfront
+
+### 4.
+
+please write it for an audeince that is senior leadership
+
+### 5.
+
+can you model the end to end journey for one user
+
+### 6.
+
+please chekc Meteor Mite and how it works for him
+
+### 7.
+
+create in the console a way of dispalying per user
+
+### 8.
+
+create how it looks on the phone for a responder
+
+### 9.
+
+add to the phone view the rating of the responder
