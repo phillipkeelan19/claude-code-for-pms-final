@@ -217,7 +217,7 @@
   <div class="grid g2">
     <div>
       <div class="prompt"><b>Prompts recorded in 06-sidekicks/prompts.md</b>(none: the three prompt slots are empty)</div>
-      <p class="caveat" style="margin-top:16px">I'm not going to invent a prompt. The skill exists at <code>.claude/skills/review-checklist/SKILL.md</code> but is still untracked in git, so this commit adds it. I have not shown it running on a brief here.</p>
+      <p class="caveat" style="margin-top:16px">I'm not going to invent a prompt. The skill exists at <code>.claude/skills/review-checklist/SKILL.md</code> but is still untracked in git, so this commit adds it. It is run on the quiet-responder brief later in this deck.</p>
     </div>
     <div class="finding"><b class="l">Artifact</b>A reusable skill that runs the same four checks on any brief: owner, success measure, scope that matches start to end, and problem before fix. Next slides: the fix, then how this skill maps to what went wrong.</div>
   </div>
@@ -254,6 +254,30 @@
   <div class="grid g2" style="margin-top:18px">
     <div class="finding"><b class="l">Use it</b>Run it on every brief before it goes further, including the quiet-responder recovery brief, which is the obvious first test.</div>
     <div class="card" style="border-color:var(--amber)"><h3 class="amber">Honest limits</h3>It reviews briefs, not code. A weight change like 0.45 → 0.60 only gets checked if someone writes it into a brief with a success measure. Pair it with a rule that any routing-config change names the engineering manager and a per-responder metric.</div>
+  </div>
+</section>
+
+<!-- 10b SKILL RUN -->
+<section id="s10b">
+  <div class="kicker">The skill, run for real</div>
+  <h2>review-checklist on the quiet-responder brief: <span class="amber">needs changes</span></h2>
+  <p class="lead">Run on <code>05-super-speed/brief-quiet-responder-recovery.md</code>. The brief gets the problem right but would have been stopped at the door on ownership, and its measures and scope don't fully line up.</p>
+  <div class="card">
+    <table>
+      <tr><th>Check</th><th>Result</th><th>Evidence</th></tr>
+      <tr><td><b>Owner</b></td><td><span class="pill no">Not met</span></td><td>Only "Author: PM, Rook Dispatch. For: Helen Achebe". That says who wrote it, not who owns delivery.</td></tr>
+      <tr><td><b>Success measure</b></td><td><span class="pill part">Partly</span></td><td>Three measures with some baselines (5–8 tickets a week, 11.1% vs 5.5% no-taker, 10–15 pings a week), but no targets or dates, and "to be baselined with Ravi".</td></tr>
+      <tr><td><b>Scope matches</b></td><td><span class="pill part">Partly</span></td><td>Success measure says new tickets fall to the pre-4.2 level of 5–8 a week in total, but "gone before I could answer" tickets are excluded ("does not fix the 60s ping wait"). "Not for healthy responders: experience should not change visibly" sits against giving low-ranked responders a share of offers, which must take offers from someone.</td></tr>
+      <tr><td><b>Problem before fix</b></td><td><span class="pill part">Partly</span></td><td>Problem and evidence come first, with caveats up front. But "which pushed some responders below that line" is stated as fact, while the caveats say score persistence and the weights-vs-wait split are unconfirmed.</td></tr>
+    </table>
+  </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="finding"><b class="l">Fixes</b>
+      1. Add an "Owner" line naming a person and role (me as PM, or Helen).<br>
+      2. Add a target and date to each measure; replace "total tickets" with quiet-phone tickets only, or move the 60s wait in scope.<br>
+      3. Reconcile "no visible change for healthy responders" with fair-share offers; say who gives up offers.<br>
+      4. Soften "pushed some responders below that line" to a hypothesis until Wen Li confirms.</div>
+    <div class="card"><h3 class="blue">One more thing</h3>Check 1 was never part of the evidence work: the brief is the first place the missing owner shows up, which is the same gap Priya's departure left on the Q3 roadmap.<p class="caveat">I did not edit the brief; the skill reports only.</p></div>
   </div>
 </section>
 
