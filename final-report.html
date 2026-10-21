@@ -233,7 +233,315 @@
     <div class="card"><h3 class="amber">Act</h3>Handler acknowledges or tells Support in one click.</div>
     <div class="card"><h3 class="green">Recover</h3>Low-ranked responders get a fair share of offers; a taken ping lifts them again. A weekly pings-per-responder view sits beside acceptance.</div>
   </div>
-  <iframe src="05-super-speed/prototype.html" title="Rook Dispatch prototype" loading="lazy"></iframe>
+  <iframe title="Rook Dispatch prototype" srcdoc="<!DOCTYPE html>
+<html lang=&quot;en&quot;>
+<head>
+<meta charset=&quot;utf-8&quot;>
+<title>Rook Dispatch console - Quiet responder flag (prototype)</title>
+<meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;>
+<style>
+  :root { --bg:#f4f5f7; --panel:#fff; --ink:#1d2430; --mute:#667085; --line:#e3e6eb; --brand:#1f3a5f; --warn:#b54708; --warnbg:#fff4e5; --ok:#067647; --okbg:#e7f6ee; --bad:#b42318; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui,Segoe UI,Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--brand); color:#fff; padding:12px 24px; display:flex; align-items:center; gap:24px; }
+  header b { font-size:16px; letter-spacing:.3px; }
+  header nav a { color:#c9d6e8; margin-right:16px; text-decoration:none; }
+  header nav a.on { color:#fff; border-bottom:2px solid #fff; padding-bottom:2px; }
+  .proto { background:#fffbe6; border-bottom:1px solid #eadf9a; padding:6px 24px; font-size:12px; color:#6b5e00; }
+  main { max-width:1100px; margin:20px auto; padding:0 24px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--mute); margin-bottom:16px; }
+  .banner { background:var(--warnbg); border:1px solid #f5c680; color:var(--warn); border-radius:8px; padding:12px 16px; display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .banner.clear { background:var(--okbg); border-color:#a6dcbd; color:var(--ok); }
+  button { font:inherit; cursor:pointer; border-radius:6px; border:1px solid var(--line); background:#fff; padding:6px 12px; }
+  button.primary { background:var(--brand); color:#fff; border-color:var(--brand); }
+  button:hover { filter:brightness(.96); }
+  .grid { display:grid; grid-template-columns:1fr 360px; gap:16px; align-items:start; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  table { width:100%; border-collapse:collapse; }
+  th,td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); }
+  th { font-size:12px; color:var(--mute); text-transform:uppercase; letter-spacing:.4px; }
+  tr.row { cursor:pointer; }
+  tr.row:hover { background:#f8fafc; }
+  tr.sel { background:#eef3fa !important; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:99px; font-size:12px; font-weight:600; }
+  .pill.quiet { background:var(--warnbg); color:var(--warn); }
+  .pill.ok { background:var(--okbg); color:var(--ok); }
+  .pill.ack { background:#eef0f4; color:var(--mute); }
+  .detail { padding:16px; }
+  .detail h2 { margin:0 0 2px; font-size:17px; }
+  .bars { display:flex; align-items:flex-end; gap:6px; height:90px; margin:12px 0 4px; border-bottom:1px solid var(--line); }
+  .bar { flex:1; background:#9db4d3; border-radius:3px 3px 0 0; position:relative; }
+  .bar.after { background:#e08a3c; }
+  .bar.rec { background:#4aa876; }
+  .axis { display:flex; justify-content:space-between; font-size:11px; color:var(--mute); }
+  .kv { display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:12px 0; }
+  .kv span:nth-child(odd) { color:var(--mute); }
+  .why { background:#f8fafc; border-left:3px solid var(--brand); padding:8px 12px; margin:12px 0; font-size:13px; }
+  .toggle { margin-left:auto; font-size:12px; display:flex; align-items:center; gap:6px; }
+  .empty { padding:40px 16px; text-align:center; color:var(--mute); }
+  .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .note { font-size:12px; color:var(--mute); margin-top:12px; }
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .rc { padding:16px; }
+  .rc h2 { margin:0; font-size:17px; }
+  .tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:12px 0; }
+  .tile { background:#f8fafc; border:1px solid var(--line); border-radius:6px; padding:8px; text-align:center; }
+  .tile b { display:block; font-size:20px; }
+  .tile span { font-size:11px; color:var(--mute); }
+  .stack { display:flex; align-items:flex-end; gap:5px; height:110px; border-bottom:1px solid var(--line); position:relative; }
+  .col { flex:1; display:flex; flex-direction:column-reverse; height:100%; justify-content:flex-start; position:relative; }
+  .col i { display:block; width:100%; }
+  .t { background:#4aa876; } .d { background:#c3cad6; } .m { background:#e08a3c; }
+  .col.rel::before { content:&quot;&quot;; position:absolute; left:-3px; top:0; bottom:0; border-left:2px dotted var(--bad); }
+  .legend { font-size:11px; color:var(--mute); margin-top:6px; display:flex; gap:12px; }
+  .legend em { display:inline-block; width:9px; height:9px; margin-right:4px; border-radius:2px; }
+  .log { margin-top:12px; max-height:200px; overflow:auto; font-size:12px; }
+  .log td,.log th { padding:4px 8px; }
+  .o-taken { color:var(--ok); font-weight:600; } .o-missed { color:var(--warn); font-weight:600; } .o-turned { color:var(--mute); }
+  .phonewrap { display:flex; gap:32px; align-items:flex-start; }
+  .phoneside { max-width:340px; color:var(--mute); }
+  .phone { width:300px; height:600px; background:#111; border-radius:36px; padding:12px; position:relative; flex:none; box-shadow:0 10px 30px rgba(0,0,0,.25); }
+  .notch { position:absolute; top:12px; left:50%; transform:translateX(-50%); width:110px; height:20px; background:#111; border-radius:0 0 14px 14px; z-index:2; }
+  .screen { background:#f4f5f7; border-radius:26px; height:100%; overflow:hidden; display:flex; flex-direction:column; font-size:13px; }
+  .sbar { background:var(--brand); color:#fff; padding:30px 16px 12px; font-weight:600; }
+  .sbar small { display:block; font-weight:400; color:#c9d6e8; }
+  .pbody { padding:12px; flex:1; overflow:auto; }
+  .pc { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:10px; }
+  .pc.q { background:var(--warnbg); border-color:#f5c680; }
+  .pc.g { background:var(--okbg); border-color:#a6dcbd; }
+  .big { width:100%; padding:12px; font-size:15px; border-radius:10px; margin-top:8px; }
+  .big.take { background:var(--ok); color:#fff; border-color:var(--ok); }
+  .timer { font-size:34px; font-weight:700; text-align:center; }
+  .mini { display:flex; gap:4px; align-items:flex-end; height:40px; margin:6px 0; }
+  .mini div { flex:1; background:#9db4d3; border-radius:2px; }
+  .mini div.lo { background:#e08a3c; }
+  .meter { height:8px; background:#e3e6eb; border-radius:4px; margin:10px 0 6px; overflow:hidden; }
+  .meter div { height:100%; background:linear-gradient(90deg,#e08a3c,#4aa876); transition:width .3s; }
+  .tabs { display:flex; border-top:1px solid var(--line); background:#fff; }
+  .tabs span { flex:1; text-align:center; padding:10px 0; font-size:11px; color:var(--mute); }
+  .tabs span.on { color:var(--brand); font-weight:600; }
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1d2430; color:#fff; padding:10px 16px; border-radius:8px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  #toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<header>
+  <b>ROOK DISPATCH</b>
+  <nav><a>Callouts</a><a class=&quot;on&quot; id=&quot;nav-all&quot; data-view=&quot;all&quot; href=&quot;#&quot;>Responders</a><a id=&quot;nav-mine&quot; data-view=&quot;mine&quot; href=&quot;#&quot;>My responders (Kip)</a><a id=&quot;nav-phone&quot; data-view=&quot;phone&quot; href=&quot;#&quot;>Responder phone app</a><a>Reports</a><a>Settings</a></nav>
+  <label class=&quot;toggle&quot;><input type=&quot;checkbox&quot; id=&quot;after&quot;> Preview: after the fix ships</label>
+</header>
+<div class=&quot;proto&quot;>Prototype for discussion. Names are cover names only. Numbers are illustrative, based on the 4.2 findings, not live data.</div>
+
+<main id=&quot;view-phone&quot; style=&quot;display:none&quot;>
+  <h1>Responder phone app - Meteor Mite</h1>
+  <div class=&quot;sub&quot;>What the responder sees. Use &quot;Preview: after the fix ships&quot; at the top to switch the message. Click &quot;Simulate an incoming ping&quot; to try a ping.</div>
+  <div class=&quot;phonewrap&quot;>
+    <div class=&quot;phone&quot;><div class=&quot;notch&quot;></div><div class=&quot;screen&quot; id=&quot;screen&quot;></div></div>
+    <div class=&quot;phoneside&quot;>
+      <p><b>What this screen changes</b></p>
+      <p>Today the app says nothing when pings dry up. The phone just sits there. This adds a plain status card so a responder knows they are still in rotation, why it is quiet, and what to do.</p>
+      <p><b>Not in this prototype</b></p>
+      <p>No change to ping wait or ranking. No identity details. Wording is a first draft for Sofia Marino (product designer).</p>
+      <button class=&quot;primary&quot; id=&quot;simping&quot;>Simulate an incoming ping</button>
+    </div>
+  </div>
+</main>
+
+<main id=&quot;view-mine&quot; style=&quot;display:none&quot;>
+  <h1>My responders - Kip</h1>
+  <div class=&quot;sub&quot;>One card per responder, same scale, real ping data from 29 Jun to 6 Sep. The dotted line marks the 4.2 release (12 Aug).</div>
+  <div id=&quot;mine-banner&quot;></div>
+  <div class=&quot;pair&quot; id=&quot;pair&quot;></div>
+</main>
+
+<main id=&quot;view-all&quot;>
+  <h1>Responders - Uptown &amp;amp; surrounding areas</h1>
+  <div class=&quot;sub&quot;>Handler console. Pings offered per week, last 4 weeks.</div>
+
+  <div id=&quot;banner&quot;></div>
+
+  <div class=&quot;grid&quot;>
+    <div class=&quot;card&quot;>
+      <table>
+        <thead><tr><th>Responder</th><th>Pings, last 2 wks</th><th>Usual per wk</th><th>Status</th></tr></thead>
+        <tbody id=&quot;rows&quot;></tbody>
+      </table>
+    </div>
+    <div class=&quot;card&quot; id=&quot;detail&quot;><div class=&quot;empty&quot;>Select a responder to see why they are flagged.</div></div>
+  </div>
+</main>
+<div id=&quot;toast&quot;></div>
+
+<script>
+// before = pings in the 2 weeks before the fix; recovered = after the fix (illustrative)
+const R = [
+  {n:&quot;Vesper&quot;,       usual:12, now:2, rec:19, quiet:true, miss:&quot;4 of 7&quot;, taken:0},
+  {n:&quot;Meteor Mite&quot;,  usual:11, now:3, rec:17, quiet:true, miss:&quot;4 of 9&quot;, taken:0},
+  {n:&quot;The Undertow&quot;, usual:13, now:3, rec:20, quiet:true, miss:&quot;5 of 9&quot;, taken:0},
+  {n:&quot;Farlight&quot;,     usual:12, now:2, rec:18, quiet:true, miss:&quot;4 of 8&quot;, taken:0},
+  {n:&quot;Falkirk&quot;,      usual:12, now:28, rec:24, quiet:false},
+  {n:&quot;Cindermark&quot;,   usual:11, now:26, rec:23, quiet:false},
+  {n:&quot;Bulwark&quot;,      usual:10, now:24, rec:22, quiet:false},
+];
+const state = {sel:null, ack:{}, after:false};
+const $ = id => document.getElementById(id);
+
+function status(r){
+  if(!r.quiet) return '<span class=&quot;pill ok&quot;>Normal</span>';
+  if(state.after) return '<span class=&quot;pill ok&quot;>Recovering</span>';
+  return state.ack[r.n] ? '<span class=&quot;pill ack&quot;>Acknowledged</span>' : '<span class=&quot;pill quiet&quot;>Quiet</span>';
+}
+function render(){
+  const q = R.filter(r=>r.quiet &amp;&amp; !state.after);
+  $('banner').innerHTML = q.length
+    ? `<div class=&quot;banner&quot;><span><b>${q.length} responders are available but barely being asked.</b> Their phones are going quiet. Open a row to see why.</span></div>`
+    : `<div class=&quot;banner clear&quot;><span><b>No quiet responders.</b> Everyone available is getting a fair share of callouts.</span></div>`;
+  $('rows').innerHTML = R.map(r=>`<tr class=&quot;row ${state.sel===r.n?'sel':''}&quot; data-n=&quot;${r.n}&quot;>
+    <td><b>${r.n}</b></td><td>${state.after&amp;&amp;r.quiet?r.rec:r.now}</td><td>${r.usual}</td><td>${status(r)}</td></tr>`).join('');
+  document.querySelectorAll('tr.row').forEach(tr=>tr.onclick=()=>{state.sel=tr.dataset.n;render();});
+  renderDetail();
+}
+function renderDetail(){
+  const r = R.find(x=>x.n===state.sel);
+  if(!r){ $('detail').innerHTML='<div class=&quot;empty&quot;>Select a responder to see why they are flagged.</div>'; return; }
+  const recovered = state.after &amp;&amp; r.quiet;
+  const wk = r.quiet ? [r.usual, r.usual, r.now/2+.5, r.now/2] : [r.usual, r.usual, r.now/2, r.now/2];
+  const bars = (recovered ? [r.usual, r.usual, r.now/2, r.rec/2] : wk).map((v,i)=>{
+    const cls = i>=2 ? (recovered&amp;&amp;i==3?'rec':'after') : '';
+    return `<div class=&quot;bar ${cls}&quot; style=&quot;height:${Math.min(100,v*4)}%&quot; title=&quot;${Math.round(v)} pings&quot;></div>`;}).join('');
+  let body;
+  if(!r.quiet){
+    body = `<div class=&quot;why&quot;>Receiving a normal share of callouts. No action needed.</div>`;
+  } else if(recovered){
+    body = `<div class=&quot;why&quot;>Low-ranked responders now get a fair share of offers, so a taken ping lifts them back up. Volume is back near the usual level.</div>`;
+  } else {
+    body = `<div class=&quot;kv&quot;><span>Available</span><span>Yes, set by handler</span>
+      <span>Pings, last 2 wks</span><span>${r.now} (usual ${r.usual} a week)</span>
+      <span>Missed</span><span>${r.miss} pings in the first week after 4.2</span>
+      <span>Taken</span><span>${r.taken}</span></div>
+      <div class=&quot;why&quot;><b>Why this is happening:</b> since 4.2 the ranking favours the closest responder, and each missed ping lowers a responder's place. Lower-ranked responders are only asked if everyone above says no, so ${r.n} has had no chance to earn their place back.</div>
+      <div class=&quot;actions&quot;>
+        <button class=&quot;primary&quot; id=&quot;ack&quot;>${state.ack[r.n]?'Acknowledged':'Acknowledge'}</button>
+        <button id=&quot;report&quot;>Tell support</button>
+      </div>`;
+  }
+  $('detail').innerHTML = `<div class=&quot;detail&quot;><h2>${r.n}</h2>
+    <div class=&quot;sub&quot;>${r.quiet&amp;&amp;!recovered?'<span class=&quot;pill quiet&quot;>Quiet since 12 Aug (4.2)</span>':'<span class=&quot;pill ok&quot;>'+(recovered?'Recovering':'Normal')+'</span>'}</div>
+    <div class=&quot;axis&quot;><span>Pings per week</span></div>
+    <div class=&quot;bars&quot;>${bars}</div>
+    <div class=&quot;axis&quot;><span>3 wks ago</span><span>2 wks</span><span>Last wk</span><span>This wk</span></div>
+    ${body}
+    <div class=&quot;note&quot;>Illustrative numbers. Nothing here identifies who a responder is.</div></div>`;
+  const a=$('ack'); if(a) a.onclick=()=>{state.ack[r.n]=true;toast(r.n+' marked as acknowledged. Flag stays until offers recover.');render();};
+  const p=$('report'); if(p) p.onclick=()=>toast('Note sent to Support: '+r.n+' is flagged quiet.');
+}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+$('after').onchange=e=>{state.after=e.target.checked;render();if($('view-phone').style.display!=='none'&amp;&amp;phone.mode==='home')renderPhone();};
+render();
+
+// ---- Per-responder view: real ping data (rook.pings), weekly from 29 Jun ----
+const WK = ['29 Jun','6 Jul','13 Jul','20 Jul','27 Jul','3 Aug','10 Aug','17 Aug','24 Aug','31 Aug'];
+const MINE = [
+  {n:&quot;Meteor Mite&quot;, area:&quot;Eastgate&quot;, taken:[7,9,6,7,9,8,4,1,0,0], td:[4,3,4,3,2,3,2,1,1,0], miss:[0,0,0,1,1,0,4,2,1,1],
+   log:[[&quot;12 Aug 19:04&quot;,&quot;turned down&quot;],[&quot;13 Aug 13:43&quot;,&quot;missed&quot;],[&quot;13 Aug 15:12&quot;,&quot;missed&quot;],[&quot;14 Aug 07:26&quot;,&quot;missed&quot;],[&quot;15 Aug 15:18&quot;,&quot;taken&quot;],[&quot;15 Aug 19:40&quot;,&quot;taken&quot;],[&quot;16 Aug 11:16&quot;,&quot;missed&quot;],[&quot;18 Aug 07:37&quot;,&quot;turned down&quot;],[&quot;19 Aug 17:30&quot;,&quot;taken&quot;],[&quot;20 Aug 16:41&quot;,&quot;missed&quot;],[&quot;22 Aug 20:53&quot;,&quot;missed&quot;],[&quot;27 Aug 20:03&quot;,&quot;turned down&quot;],[&quot;29 Aug 09:15&quot;,&quot;missed&quot;],[&quot;5 Sep 15:06&quot;,&quot;missed&quot;]]},
+  {n:&quot;The Gale&quot;, area:&quot;Eastgate&quot;, taken:[10,9,10,11,11,10,9,12,14,16], td:[2,3,3,2,1,3,3,3,4,3], miss:[1,0,0,1,1,0,3,2,2,2], log:null},
+];
+const mineState = {open:{}};
+function sum(a,from){return a.slice(from).reduce((x,y)=>x+y,0);}
+function renderMine(){
+  const max = 24;
+  const quietOne = MINE[0];
+  $('mine-banner').innerHTML = `<div class=&quot;banner&quot;><span><b>Meteor Mite and The Gale cover the same area but are having opposite weeks.</b> Meteor Mite has been pinged 3 times since 24 Aug and has taken none since 19 Aug. The Gale is getting more work than ever.</span></div>`;
+  $('pair').innerHTML = MINE.map(r=>{
+    const tot = r.taken.map((v,i)=>v+r.td[i]+r.miss[i]);
+    const post = [6,7,8,9];
+    const pP = sum(tot,7)+0, tk = sum(r.taken,7), ms = sum(r.miss,7);
+    const cols = tot.map((t,i)=>`<div class=&quot;col ${i===6?'rel':''}&quot; title=&quot;${WK[i]}: ${t} pings, ${r.taken[i]} taken, ${r.miss[i]} missed&quot; style=&quot;height:${t/max*100}%&quot;><i class=&quot;t&quot; style=&quot;flex:${r.taken[i]}&quot;></i><i class=&quot;d&quot; style=&quot;flex:${r.td[i]}&quot;></i><i class=&quot;m&quot; style=&quot;flex:${r.miss[i]}&quot;></i></div>`).join('');
+    const q = r.n===&quot;Meteor Mite&quot;;
+    return `<div class=&quot;card rc&quot;><h2>${r.n} ${q?'<span class=&quot;pill quiet&quot;>Quiet</span>':'<span class=&quot;pill ok&quot;>Busy</span>'}</h2>
+      <div class=&quot;sub&quot;>${r.area} &amp;middot; handler Kip</div>
+      <div class=&quot;tiles&quot;>
+        <div class=&quot;tile&quot;><b>${sum(tot,0)}</b><span>pings, 10 wks</span></div>
+        <div class=&quot;tile&quot;><b>${sum(r.taken,0)}</b><span>taken</span></div>
+        <div class=&quot;tile&quot;><b>${sum(r.miss,0)}</b><span>missed</span></div>
+        <div class=&quot;tile&quot;><b>${sum(tot,6)}</b><span>pings since 10 Aug</span></div>
+      </div>
+      <div class=&quot;stack&quot;>${cols}</div>
+      <div class=&quot;axis&quot;><span>${WK[0]}</span><span>${WK[6]} (4.2)</span><span>${WK[9]}</span></div>
+      <div class=&quot;legend&quot;><span><em class=&quot;t&quot;></em>taken</span><span><em class=&quot;d&quot;></em>turned down</span><span><em class=&quot;m&quot;></em>missed</span></div>
+      ${q ? `<div class=&quot;why&quot;>Pings fell from 10-12 a week to 1 a week, and every ping since 20 Aug has gone unanswered or been turned down. Nothing on this card tells Kip why.</div>
+        <div class=&quot;actions&quot;><button id=&quot;ack-mm&quot; class=&quot;primary&quot;>${state.ack[&quot;Meteor Mite&quot;]?'Acknowledged':'Acknowledge flag'}</button><button id=&quot;log-mm&quot;>${mineState.open.mm?'Hide':'Show'} ping log since 12 Aug</button></div>
+        ${mineState.open.mm?`<div class=&quot;log&quot;><table><thead><tr><th>When</th><th>Outcome</th></tr></thead><tbody>${r.log.map(l=>`<tr><td>${l[0]}</td><td class=&quot;o-${l[1].split(' ')[0]}&quot;>${l[1]}</td></tr>`).join('')}</tbody></table></div>`:''}`
+        : `<div class=&quot;why&quot;>Taking a growing share of Eastgate callouts: pings up from 12-14 a week to 21, with 16 taken in the week of 31 Aug.</div>`}
+      </div>`;}).join('');
+  const a=$('ack-mm'); if(a) a.onclick=()=>{state.ack[&quot;Meteor Mite&quot;]=true;toast('Flag acknowledged for Meteor Mite.');renderMine();render();};
+  const l=$('log-mm'); if(l) l.onclick=()=>{mineState.open.mm=!mineState.open.mm;renderMine();};
+}
+// ---- Responder phone app ----
+const phone = {mode:'home', t:60, timer:null, avail:true, taken:false, score:0.15}; // illustrative starting score, not real data
+function stopTimer(){ if(phone.timer){clearInterval(phone.timer);phone.timer=null;} }
+function renderPhone(){
+  const s = $('screen');
+  if(phone.mode==='ping'){
+    s.innerHTML = `<div class=&quot;sbar&quot;>New callout<small>Eastgate &amp;middot; capability: structural-entry</small></div>
+      <div class=&quot;pbody&quot;><div class=&quot;pc&quot;><div>Can you attend?</div><div class=&quot;timer&quot; id=&quot;pt&quot;>${phone.t}s</div>
+      <div style=&quot;text-align:center;color:var(--mute)&quot;>Ping wait: 60 seconds, then it moves to the next responder</div>
+      <button class=&quot;big take&quot; id=&quot;pt-take&quot;>Take callout</button><button class=&quot;big&quot; id=&quot;pt-no&quot;>Turn down</button></div></div>`;
+    $('pt-take').onclick=()=>endPing('taken'); $('pt-no').onclick=()=>endPing('turned down');
+    return;
+  }
+  const quiet = !state.after;
+  const band = phone.score<0.34 ? {label:'Low',cls:'quiet'} : phone.score<0.67 ? {label:'Medium',cls:'ack'} : {label:'High',cls:'ok'};
+  const bars = quiet ? [11,12,10,4,2,1] : [11,12,10,4,9,14];
+  const card = !phone.avail
+    ? `<div class=&quot;pc&quot;><b>You are set as unavailable.</b><div>You will not be offered callouts until you switch back.</div></div>`
+    : quiet
+    ? `<div class=&quot;pc q&quot;><b>You've had fewer callouts lately</b>
+        <div>You are set as available, and your phone is working. You were offered 3 callouts in the last two weeks, against a usual 10 to 12 a week.</div>
+        <div class=&quot;mini&quot;>${bars.map((v,i)=>`<div class=&quot;${i>=3?'lo':''}&quot; style=&quot;height:${v*3}px&quot;></div>`).join('')}</div>
+        <div style=&quot;color:var(--mute);font-size:12px&quot;>Since the 12 Aug update, missed and declined pings lower your place in line, and callouts go to people nearer first. Taking a callout moves you back up.</div>
+        <button class=&quot;big&quot; id=&quot;p-ok&quot;>Got it</button></div>`
+    : `<div class=&quot;pc g&quot;><b>You're back in rotation</b>
+        <div>You are being offered a fair share of callouts again. Taking a callout lifts your place in line.</div>
+        <div class=&quot;mini&quot;>${bars.map((v,i)=>`<div style=&quot;height:${v*3}px&quot;></div>`).join('')}</div></div>`;
+  s.innerHTML = `<div class=&quot;sbar&quot;>Meteor Mite<small>${phone.avail?'Available':'Unavailable'}</small></div>
+    <div class=&quot;pbody&quot;>
+      <div class=&quot;pc&quot;><b>Availability</b>
+        <button class=&quot;big ${phone.avail?'take':''}&quot; id=&quot;p-av&quot;>${phone.avail?'Available - tap to go off duty':'Off duty - tap to go available'}</button></div>
+      <div class=&quot;pc&quot;><b>Your place in line</b> <span class=&quot;pill ${band.cls}&quot; style=&quot;float:right&quot;>${band.label}</span>
+        <div class=&quot;meter&quot;><div style=&quot;width:${Math.round(phone.score*100)}%&quot;></div></div>
+        <div style=&quot;color:var(--mute);font-size:12px&quot;>Taking a callout moves you up. Missing or turning one down moves you down. Being closer to the callout also counts. Estimated, illustrative score.</div></div>
+      ${card}
+      ${phone.taken?`<div class=&quot;pc g&quot;><b>Callout taken.</b> Thanks. Your place in line goes up.</div>`:''}
+      <div class=&quot;pc&quot;><b>Recent callouts</b><div style=&quot;color:var(--mute)&quot;>19 Aug 17:30 - taken<br>20 Aug 16:41 - missed<br>22 Aug 20:53 - missed</div></div>
+    </div>
+    <div class=&quot;tabs&quot;><span class=&quot;on&quot;>Home</span><span>History</span><span>Help</span></div>`;
+  $('p-av').onclick=()=>{phone.avail=!phone.avail;renderPhone();};
+  const ok=$('p-ok'); if(ok) ok.onclick=()=>{toast('Noted. We will keep this card until callouts recover.');};
+}
+function startPing(){ stopTimer(); phone.mode='ping'; phone.t=60; renderPhone();
+  phone.timer=setInterval(()=>{ phone.t--; const e=$('pt'); if(e) e.textContent=phone.t+'s'; if(phone.t<=0) endPing('missed'); },1000); }
+function endPing(o){ stopTimer(); phone.mode='home'; phone.taken=(o==='taken');
+  phone.score = Math.max(0, Math.min(1, phone.score + (o==='taken' ? 0.08 : -0.12)));
+  toast(o==='taken'?'Callout taken. Handler Kip is notified.':o==='missed'?'Ping missed. It moved to the next responder.':'Turned down. It moved to the next responder.');
+  renderPhone(); }
+$('simping').onclick=()=>{ if(phone.mode!=='ping') startPing(); };
+
+function show(v){
+  $('view-phone').style.display = v==='phone'?'':'none';
+  $('nav-phone').classList.toggle('on', v==='phone');
+  if(v==='phone') renderPhone();
+  $('view-all').style.display = v==='all'?'':'none';
+  $('view-mine').style.display = v==='mine'?'':'none';
+  $('nav-all').classList.toggle('on', v==='all');
+  $('nav-mine').classList.toggle('on', v==='mine');
+  if(v==='mine') renderMine();
+}
+document.querySelectorAll('nav a[data-view]').forEach(a=>a.onclick=e=>{e.preventDefault();show(a.dataset.view);});
+</script>
+</body>
+</html>"></iframe>
   <p class="caveat">Prototype is <code>05-super-speed/prototype.html</code> (keep this file beside the folder so it loads). Numbers are illustrative except Kip's two cards; responders' real scores aren't in the database. Showing responders a rating is still an open product decision: it could help them or invite gaming. The fix is my proposal, not agreed with Wen Li or Marcus Oyelaran.</p>
 </section>
 
